@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Criteria — El criterio detrás de tu IA</title>
+<meta name="description" content="Consultora independiente de selección de modelos de inteligencia artificial. Elegimos el modelo más barato que cumple tu requisito, no el más potente.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F2E4C'/%3E%3Cpath d='M16 34 L27 46' stroke='%23FFFFFF' stroke-width='8' stroke-linecap='round' fill='none'/%3E%3Cpath d='M27 46 L48 19' stroke='%2300C2CB' stroke-width='8' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#0F2E4C;
+  --cian:#00C2CB;
+  --cian-oscuro:#00868D;
+  --carbon:#1A1D21;
+  --gris:#5A6672;
+  --claro:#F4F6F8;
+  --blanco:#FFFFFF;
+  --borde:#DDE3E9;
+  --display:'Space Grotesk',system-ui,sans-serif;
+  --cuerpo:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --ancho:1080px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+body{font-family:var(--cuerpo);color:var(--carbon);background:var(--blanco);line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--ancho);margin:0 auto;padding:0 24px}
+h1,h2,h3,.marca{font-family:var(--display);font-weight:700;line-height:1.15;letter-spacing:-.02em}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--cian);outline-offset:3px;border-radius:2px}
+
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cian-oscuro);margin-bottom:14px}
+
+/* --- Barra --- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(15,46,76,.96);backdrop-filter:blur(8px)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:66px}
+.marca{display:flex;align-items:center;gap:11px;color:#fff;font-size:21px;text-decoration:none}
+.marca .ia{color:var(--cian)}
+.nav-links{display:flex;gap:26px;font-size:14.5px}
+.nav-links a{color:#C6D3DF;text-decoration:none;transition:color .15s}
+.nav-links a:hover{color:#fff}
+@media(max-width:720px){.nav-links{display:none}}
+
+/* --- Hero --- */
+.hero{background:var(--azul);color:#fff;padding:88px 0 96px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.hero h1{font-size:clamp(34px,5vw,54px);margin-bottom:20px}
+.hero h1 em{font-style:normal;color:var(--cian)}
+.hero p{font-size:18px;color:#C6D3DF;max-width:52ch;margin-bottom:32px}
+.botones{display:flex;gap:14px;flex-wrap:wrap}
+.btn{display:inline-block;padding:13px 24px;border-radius:8px;font-weight:600;font-size:15px;text-decoration:none;border:1.5px solid transparent;cursor:pointer;font-family:var(--cuerpo);transition:transform .12s,background .15s}
+.btn-primario{background:var(--cian);color:#04262B}
+.btn-primario:hover{transform:translateY(-2px)}
+.btn-fantasma{border-color:#39566F;color:#fff}
+.btn-fantasma:hover{border-color:var(--cian)}
+.hero-viz{background:#0B2540;border:1px solid #234866;border-radius:14px;padding:22px}
+.hero-viz .cap{font-family:var(--mono);font-size:11.5px;color:#7E97AC;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+@media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:40px}}
+
+/* --- Secciones --- */
+section{padding:84px 0}
+.claro{background:var(--claro)}
+.sec-head{max-width:60ch;margin-bottom:44px}
+.sec-head h2{font-size:clamp(26px,3.4vw,36px);margin-bottom:14px}
+.sec-head p{color:var(--gris);font-size:17px}
+
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+@media(max-width:760px){.cards{grid-template-columns:1fr}}
+.card{background:var(--blanco);border:1px solid var(--borde);border-radius:12px;padding:28px}
+.card h3{font-size:19px;margin-bottom:10px}
+.card p{color:var(--gris);font-size:15.5px}
+.card .tag{font-family:var(--mono);font-size:11px;color:var(--cian-oscuro);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:12px}
+
+/* --- Calculadora --- */
+.calc{display:grid;grid-template-columns:340px 1fr;gap:28px;align-items:start}
+@media(max-width:900px){.calc{grid-template-columns:1fr}}
+.panel{background:var(--blanco);border:1px solid var(--borde);border-radius:12px;padding:26px}
+.campo{margin-bottom:20px}
+.campo label{display:block;font-size:14px;font-weight:600;margin-bottom:7px}
+.campo .ayuda{font-size:12.5px;color:var(--gris);font-weight:400;display:block;margin-top:3px}
+.campo input[type=number],.campo select{width:100%;padding:10px 12px;border:1.5px solid var(--borde);border-radius:8px;font-family:var(--mono);font-size:14.5px;background:#fff;color:var(--carbon)}
+.campo input:focus,.campo select:focus{border-color:var(--cian);outline:none}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer}
+.check input{margin-top:4px;width:16px;height:16px;accent-color:var(--cian-oscuro)}
+.error{color:#B3261E;font-size:13px;margin-top:6px;display:none}
+.error.visible{display:block}
+
+.veredicto{background:var(--azul);color:#fff;border-radius:12px;padding:24px;margin-bottom:20px}
+.veredicto .et{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--cian);margin-bottom:8px}
+.veredicto .nombre{font-family:var(--display);font-size:27px;font-weight:700;margin-bottom:6px}
+.veredicto .costo{font-family:var(--mono);font-size:15px;color:#C6D3DF}
+.veredicto .razon{font-size:14.5px;color:#C6D3DF;margin-top:14px;border-top:1px solid #2E5171;padding-top:14px}
+
+.tabla{width:100%;border-collapse:collapse;font-size:14.5px;background:#fff;border:1px solid var(--borde);border-radius:12px;overflow:hidden}
+.tabla th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--gris);padding:12px 14px;background:var(--claro);border-bottom:1px solid var(--borde);font-weight:400}
+.tabla td{padding:12px 14px;border-bottom:1px solid var(--borde)}
+.tabla tr:last-child td{border-bottom:none}
+.tabla .num{font-family:var(--mono);text-align:right;white-space:nowrap}
+.tabla tr.elegido td{background:#E6FAFB;font-weight:600}
+.tabla tr.descartado td{color:#9AA5B1}
+.pill{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:20px;background:var(--claro);color:var(--gris);white-space:nowrap}
+.pill.ok{background:#E6FAFB;color:var(--cian-oscuro)}
+.tabla-wrap{overflow-x:auto}
+.nota{font-size:13px;color:var(--gris);margin-top:16px;padding-left:14px;border-left:2px solid var(--cian)}
+
+/* --- Proceso --- */
+.pasos{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;counter-reset:p}
+@media(max-width:860px){.pasos{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.pasos{grid-template-columns:1fr}}
+.paso{border-top:2px solid var(--cian);padding-top:18px}
+.paso .n{font-family:var(--mono);font-size:12px;color:var(--cian-oscuro);letter-spacing:.1em;margin-bottom:8px}
+.paso h3{font-size:17px;margin-bottom:8px}
+.paso p{font-size:14.5px;color:var(--gris)}
+
+/* --- Equipo --- */
+.equipo{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:760px){.equipo{grid-template-columns:1fr}}
+.persona{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:26px}
+.persona .ini{width:46px;height:46px;border-radius:10px;background:var(--azul);color:var(--cian);font-family:var(--display);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.persona h3{font-size:17px}
+.persona .rol{font-family:var(--mono);font-size:12px;color:var(--cian-oscuro);margin:4px 0 10px}
+.persona p{font-size:14.5px;color:var(--gris)}
+
+/* --- Contacto --- */
+.contacto{background:var(--azul);color:#fff}
+.contacto .sec-head p{color:#C6D3DF}
+.datos{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:760px){.datos{grid-template-columns:1fr}}
+.dato{background:#0B2540;border:1px solid #234866;border-radius:12px;padding:22px}
+.dato .et{font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:#7E97AC;margin-bottom:8px}
+.dato a,.dato span{color:#fff;font-size:16px;text-decoration:none;word-break:break-word}
+.dato a:hover{color:var(--cian)}
+
+footer{background:#0A2138;color:#7E97AC;font-size:13.5px;padding:26px 0}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="marca" href="#inicio">
+      <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M14 34 L26 47" stroke="#fff" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <path d="M26 47 L50 17" stroke="#00C2CB" stroke-width="9" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span>Criter<span class="ia">ia</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#servicios">Servicios</a>
+      <a href="#calculadora">Calculadora</a>
+      <a href="#proceso">Proceso</a>
+      <a href="#equipo">Equipo</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="inicio">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow" style="color:var(--cian)">Selección independiente de modelos de IA</div>
+      <h1>No el modelo más potente. <em>El que tu caso necesita.</em></h1>
+      <p>Cada mes aparece un modelo nuevo y un ranking que lo corona. Nosotros no vendemos el primer puesto: medimos tu caso de uso, tu volumen y tus restricciones de datos, y te decimos cuál es el modelo más barato que cumple el requisito.</p>
+      <div class="botones">
+        <a class="btn btn-primario" href="#calculadora">Probar la calculadora</a>
+        <a class="btn btn-fantasma" href="#contacto">Hablar con nosotros</a>
+      </div>
+    </div>
+    <div class="hero-viz">
+      <div class="cap">Costo mensual vs. capacidad requerida</div>
+      <svg viewBox="0 0 340 210" width="100%" role="img" aria-label="Gráfico: varias opciones de modelo distribuidas por costo y capacidad; la opción óptima es la más barata que supera el umbral requerido.">
+        <line x1="34" y1="176" x2="322" y2="176" stroke="#2E5171" stroke-width="1"/>
+        <line x1="34" y1="18" x2="34" y2="176" stroke="#2E5171" stroke-width="1"/>
+        <line x1="34" y1="86" x2="322" y2="86" stroke="#00C2CB" stroke-width="1" stroke-dasharray="4 4" opacity=".55"/>
+        <text x="40" y="79" fill="#00C2CB" font-family="JetBrains Mono, monospace" font-size="10">umbral requerido</text>
+        <circle cx="72" cy="150" r="5" fill="#4A6C8A"/>
+        <circle cx="110" cy="128" r="5" fill="#4A6C8A"/>
+        <circle cx="163" cy="112" r="5" fill="#4A6C8A"/>
+        <circle cx="232" cy="52" r="5" fill="#4A6C8A"/>
+        <circle cx="288" cy="36" r="5" fill="#4A6C8A"/>
+        <circle cx="196" cy="66" r="8.5" fill="#00C2CB"/>
+        <line x1="196" y1="66" x2="196" y2="176" stroke="#00C2CB" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>
+        <text x="206" y="62" fill="#fff" font-family="JetBrains Mono, monospace" font-size="10.5">elegido</text>
+        <text x="34" y="196" fill="#7E97AC" font-family="JetBrains Mono, monospace" font-size="10">más barato</text>
+        <text x="322" y="196" fill="#7E97AC" font-family="JetBrains Mono, monospace" font-size="10" text-anchor="end">más caro</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<section id="servicios">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Servicios</div>
+      <h2>Cuatro decisiones que conviene no tomar por intuición</h2>
+      <p>Trabajamos sobre tus datos y tu operación, no sobre benchmarks públicos que nadie corrió con tus casos reales.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="tag">01 · Diagnóstico</span>
+        <h3>Qué automatizar y qué no</h3>
+        <p>Relevamos tareas candidatas y las ordenamos por impacto y factibilidad. Buena parte del trabajo es descartar: hay procesos donde un modelo de lenguaje agrega costo y riesgo sin agregar valor, y conviene saberlo antes de contratar nada.</p>
+      </div>
+      <div class="card">
+        <span class="tag">02 · Evaluación</span>
+        <h3>Benchmarking con tus datos</h3>
+        <p>Armamos un set de casos reales de tu operación y medimos cada modelo candidato contra él: exactitud, latencia y tasa de error en los casos límite. Te entregamos la matriz completa, no solo el ganador.</p>
+      </div>
+      <div class="card">
+        <span class="tag">03 · Costos</span>
+        <h3>Proyección a volumen real</h3>
+        <p>El precio por millón de tokens es engañoso hasta que lo multiplicás por tu volumen anual. Modelamos el costo a doce meses con tus proyecciones de crecimiento y comparamos API contra alojamiento propio.</p>
+      </div>
+      <div class="card">
+        <span class="tag">04 · Cumplimiento</span>
+        <h3>Privacidad y datos sensibles</h3>
+        <p>Si manejás datos de salud, financieros o personales, el modelo más conveniente puede quedar descartado por dónde se procesa la información. Revisamos las restricciones antes de que sean un problema, no después.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="claro" id="calculadora">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Demostración</div>
+      <h2>Estimá tu costo mensual en un minuto</h2>
+      <p>Una versión reducida del análisis que hacemos. Cargá tu volumen y tus restricciones: descartamos los modelos que no cumplen el requisito y marcamos el más barato de los que sí.</p>
+    </div>
+    <div class="calc">
+      <form class="panel" id="form" novalidate>
+        <div class="campo">
+          <label for="consultas">Consultas por mes</label>
+          <input type="number" id="consultas" value="50000" min="1" step="1000">
+          <p class="error" id="err-consultas">Ingresá un número mayor a cero.</p>
+        </div>
+        <div class="campo">
+          <label for="entrada">Tokens de entrada por consulta
+            <span class="ayuda">Aproximadamente 1 token cada 4 caracteres</span>
+          </label>
+          <input type="number" id="entrada" value="1200" min="1" step="100">
+          <p class="error" id="err-entrada">Ingresá un número mayor a cero.</p>
+        </div>
+        <div class="campo">
+          <label for="salida">Tokens de salida por consulta</label>
+          <input type="number" id="salida" value="400" min="1" step="50">
+          <p class="error" id="err-salida">Ingresá un número mayor a cero.</p>
+        </div>
+        <div class="campo">
+          <label for="criticidad">Criticidad de la tarea</label>
+          <select id="criticidad">
+            <option value="2">Baja — clasificar, etiquetar, resumir</option>
+            <option value="3" selected>Media — atención al cliente, redacción</option>
+            <option value="5">Alta — razonamiento, código, análisis legal</option>
+          </select>
+        </div>
+        <div class="campo" style="margin-bottom:0">
+          <label class="check" for="privado">
+            <input type="checkbox" id="privado">
+            <span>Los datos no pueden salir de mi infraestructura<span class="ayuda">Limita el análisis a modelos de pesos abiertos autoalojados</span></span>
+          </label>
+        </div>
+      </form>
+
+      <div>
+        <div class="veredicto" id="veredicto">
+          <div class="et">Recomendación</div>
+          <div class="nombre" id="v-nombre">—</div>
+          <div class="costo" id="v-costo">—</div>
+          <div class="razon" id="v-razon">—</div>
+        </div>
+        <div class="tabla-wrap">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Modelo</th>
+                <th scope="col">Modalidad</th>
+                <th scope="col" style="text-align:right">Costo mensual</th>
+                <th scope="col">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="filas"></tbody>
+          </table>
+        </div>
+        <p class="nota">Los precios de referencia se listan al inicio del código y deben actualizarse antes de citar a un cliente: cambian seguido. El costo de autoalojamiento incluye una estimación fija de infraestructura y no contempla el trabajo de operarla.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="proceso">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Cómo trabajamos</div>
+      <h2>Cuatro semanas desde la primera reunión hasta la decisión</h2>
+      <p>El orden importa: medir antes de elegir, y elegir antes de integrar.</p>
+    </div>
+    <div class="pasos">
+      <div class="paso">
+        <div class="n">Semana 1</div>
+        <h3>Relevamiento</h3>
+        <p>Entrevistas con las áreas involucradas y mapa de casos de uso candidatos, con volumen y criticidad estimados.</p>
+      </div>
+      <div class="paso">
+        <div class="n">Semana 2</div>
+        <h3>Set de evaluación</h3>
+        <p>Construimos el conjunto de casos reales contra el que se van a medir los modelos, incluidos los casos límite.</p>
+      </div>
+      <div class="paso">
+        <div class="n">Semana 3</div>
+        <h3>Medición</h3>
+        <p>Corremos los modelos candidatos sobre el set y registramos exactitud, latencia, costo y modo de falla.</p>
+      </div>
+      <div class="paso">
+        <div class="n">Semana 4</div>
+        <h3>Informe y plan</h3>
+        <p>Recomendación fundada, proyección de costos a doce meses y plan de integración con criterios de reevaluación.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="claro" id="equipo">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Equipo</div>
+      <h2>Tres ingenieros, sin acuerdos con proveedores</h2>
+      <p>No revendemos licencias ni cobramos comisión por modelo elegido. Nuestro único incentivo es que la recomendación te sirva.</p>
+    </div>
+    <div class="equipo">
+      <div class="persona">
+        <div class="ini">NN</div>
+        <h3>Nombre Apellido</h3>
+        <div class="rol">Evaluación y métricas</div>
+        <p>Estudiante avanzado de Ingeniería en Computación. Diseño de sets de prueba y análisis de resultados.</p>
+      </div>
+      <div class="persona">
+        <div class="ini">NN</div>
+        <h3>Nombre Apellido</h3>
+        <div class="rol">Arquitectura e integración</div>
+        <p>Estudiante avanzado de Ingeniería en Computación. Infraestructura, autoalojamiento y puesta en producción.</p>
+      </div>
+      <div class="persona">
+        <div class="ini">NN</div>
+        <h3>Nombre Apellido</h3>
+        <div class="rol">Costos y cumplimiento</div>
+        <p>Estudiante avanzado de Ingeniería en Computación. Modelado económico y revisión de restricciones de datos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contacto" id="contacto">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow" style="color:var(--cian)">Contacto</div>
+      <h2>Contanos tu caso</h2>
+      <p>La primera reunión de diagnóstico no tiene costo. Escribinos y coordinamos en el día.</p>
+    </div>
+    <div class="datos">
+      <div class="dato">
+        <div class="et">Correo</div>
+        <a href="mailto:contacto@criteria.example">contacto@criteria.example</a>
+      </div>
+      <div class="dato">
+        <div class="et">WhatsApp</div>
+        <a href="https://wa.me/5492230000000">+54 9 223 000-0000</a>
+      </div>
+      <div class="dato">
+        <div class="et">Ubicación</div>
+        <span>Mar del Plata, Argentina</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Criteria — El criterio detrás de tu IA</span>
+    <span>Trabajo académico · Ingeniería de Software</span>
+  </div>
+</footer>
+
+<script>
+const MODELOS = [
+  { nombre:"Claude Sonnet",        modalidad:"API",           entrada:3.00, salida:15.00, infra:0,   capacidad:5, propio:false },
+  { nombre:"GPT-4o",               modalidad:"API",           entrada:2.50, salida:10.00, infra:0,   capacidad:5, propio:false },
+  { nombre:"Llama 3.3 70B",        modalidad:"Autoalojado",   entrada:0.20, salida:0.20,  infra:850, capacidad:4, propio:true  },
+  { nombre:"Gemini 2.5 Flash",     modalidad:"API",           entrada:0.30, salida:2.50,  infra:0,   capacidad:3, propio:false },
+  { nombre:"Claude Haiku",         modalidad:"API",           entrada:0.80, salida:4.00,  infra:0,   capacidad:3, propio:false },
+  { nombre:"GPT-4o mini",          modalidad:"API",           entrada:0.15, salida:0.60,  infra:0,   capacidad:2, propio:false },
+  { nombre:"Mistral Small",        modalidad:"Autoalojado",   entrada:0.10, salida:0.10,  infra:350, capacidad:2, propio:true  }
+];
+
+const $ = id => document.getElementById(id);
+const campos = ["consultas","entrada","salida"];
+const fmt = n => "US$ " + n.toLocaleString("es-AR", {minimumFractionDigits:0, maximumFractionDigits:0});
+
+function validar(){
+  let ok = true;
+  campos.forEach(c => {
+    const v = parseFloat($(c).value);
+    const malo = !isFinite(v) || v <= 0;
+    $("err-"+c).classList.toggle("visible", malo);
+    if (malo) ok = false;
+  });
+  return ok;
+}
+
+function calcular(){
+  if (!validar()) return;
+
+  const consultas = parseFloat($("consultas").value);
+  const tokIn = parseFloat($("entrada").value);
+  const tokOut = parseFloat($("salida").value);
+  const minCap = parseInt($("criticidad").value, 10);
+  const soloPropio = $("privado").checked;
+
+  const evaluados = MODELOS.map(m => {
+    const costo = consultas * (tokIn/1e6*m.entrada + tokOut/1e6*m.salida) + m.infra;
+    let motivo = null;
+    if (m.capacidad < minCap) motivo = "capacidad insuficiente";
+    else if (soloPropio && !m.propio) motivo = "no autoalojable";
+    return {...m, costo, motivo};
+  });
+
+  const aptos = evaluados.filter(m => !m.motivo).sort((a,b) => a.costo - b.costo);
+  const elegido = aptos[0] || null;
+
+  evaluados.sort((a,b) => a.costo - b.costo);
+
+  $("filas").innerHTML = evaluados.map(m => {
+    const esElegido = elegido && m.nombre === elegido.nombre;
+    const clase = esElegido ? "elegido" : (m.motivo ? "descartado" : "");
+    const estado = esElegido
+      ? '<span class="pill ok">recomendado</span>'
+      : (m.motivo ? '<span class="pill">'+m.motivo+'</span>' : '<span class="pill">cumple</span>');
+    return '<tr class="'+clase+'"><td>'+m.nombre+'</td><td>'+m.modalidad+'</td><td class="num">'+fmt(m.costo)+'</td><td>'+estado+'</td></tr>';
+  }).join("");
+
+  if (!elegido){
+    $("v-nombre").textContent = "Ningún modelo cumple";
+    $("v-costo").textContent = "—";
+    $("v-razon").textContent = "Con esta combinación de criticidad y restricción de datos no queda ninguna opción viable del listado. Es exactamente el escenario donde conviene revisar si el requisito es tan estricto como parece, o si el caso de uso se puede dividir en partes.";
+    return;
+  }
+
+  const masCaro = evaluados[evaluados.length-1];
+  const ahorro = masCaro.costo - elegido.costo;
+  $("v-nombre").textContent = elegido.nombre;
+  $("v-costo").textContent = fmt(elegido.costo) + " por mes · " + elegido.modalidad;
+  $("v-razon").textContent = "Es la opción más barata que supera el umbral de capacidad para esta tarea"
+    + (soloPropio ? " y se ejecuta en tu propia infraestructura" : "")
+    + (ahorro > 0 ? ". Contra la alternativa más cara del listado, la diferencia es de " + fmt(ahorro) + " por mes." : ".");
+}
+
+campos.forEach(c => $(c).addEventListener("input", calcular));
+$("criticidad").addEventListener("change", calcular);
+$("privado").addEventListener("change", calcular);
+calcular();
+</script>
+</body>
+</html>
