@@ -236,36 +236,49 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <p>Una versión reducida del análisis que hacemos. Cargá tu volumen y tus restricciones: descartamos los modelos que no cumplen el requisito y marcamos el más barato de los que sí.</p>
     </div>
     <div class="calc">
-      <form class="panel" id="form" novalidate>
+            <form class="panel" id="form" novalidate>
         <div class="campo">
-          <label for="consultas">Consultas por mes</label>
+          <label for="tipo">Dominio del Modelo</label>
+          <select id="tipo">
+            <option value="texto" selected>Texto (LLMs)</option>
+            <option value="vision">Visión Industrial y Analítica (Imágenes/Video)</option>
+            <option value="diseno">Diseño Gráfico Generativo (Imágenes/Video)</option>
+            <option value="audio">Audio y Transcripción</option>
+          </select>
+        </div>
+        
+        <div class="campo">
+          <label for="consultas" id="label-consultas">Consultas / Tareas por mes</label>
           <input type="number" id="consultas" value="50000" min="1" step="1000">
           <p class="error" id="err-consultas">Ingresá un número mayor a cero.</p>
         </div>
-        <div class="campo">
-          <label for="entrada">Tokens de entrada por consulta
-            <span class="ayuda">Aproximadamente 1 token cada 4 caracteres</span>
-          </label>
-          <input type="number" id="entrada" value="1200" min="1" step="100">
-          <p class="error" id="err-entrada">Ingresá un número mayor a cero.</p>
+
+        <div id="campos-texto">
+          <div class="campo">
+            <label for="entrada">Tokens de entrada por consulta
+              <span class="ayuda">Aproximadamente 1 token cada 4 caracteres</span>
+            </label>
+            <input type="number" id="entrada" value="1200" min="1" step="100">
+          </div>
+          <div class="campo">
+            <label for="salida">Tokens de salida por consulta</label>
+            <input type="number" id="salida" value="400" min="1" step="50">
+          </div>
         </div>
-        <div class="campo">
-          <label for="salida">Tokens de salida por consulta</label>
-          <input type="number" id="salida" value="400" min="1" step="50">
-          <p class="error" id="err-salida">Ingresá un número mayor a cero.</p>
-        </div>
+
         <div class="campo">
           <label for="criticidad">Criticidad de la tarea</label>
           <select id="criticidad">
-            <option value="2">Baja — clasificar, etiquetar, resumir</option>
-            <option value="3" selected>Media — atención al cliente, redacción</option>
-            <option value="5">Alta — razonamiento, código, análisis legal</option>
+            <option value="2">Baja — clasificación simple, velocidad prioritaria</option>
+            <option value="3" selected>Media — equilibrio entre costo y precisión</option>
+            <option value="5">Alta — análisis complejo, cero margen de error</option>
           </select>
         </div>
+        
         <div class="campo" style="margin-bottom:0">
           <label class="check" for="privado">
             <input type="checkbox" id="privado">
-            <span>Los datos no pueden salir de mi infraestructura<span class="ayuda">Limita el análisis a modelos de pesos abiertos autoalojados</span></span>
+            <span>Los datos no pueden salir de mi infraestructura<span class="ayuda">Limita el análisis a modelos autoalojados o de hardware local</span></span>
           </label>
         </div>
       </form>
@@ -390,44 +403,68 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 <script>
 const MODELOS = [
-  { nombre:"Claude Sonnet",        modalidad:"API",           entrada:3.00, salida:15.00, infra:0,   capacidad:5, propio:false },
-  { nombre:"GPT-4o",               modalidad:"API",           entrada:2.50, salida:10.00, infra:0,   capacidad:5, propio:false },
-  { nombre:"Llama 3.3 70B",        modalidad:"Autoalojado",   entrada:0.20, salida:0.20,  infra:850, capacidad:4, propio:true  },
-  { nombre:"Gemini 2.5 Flash",     modalidad:"API",           entrada:0.30, salida:2.50,  infra:0,   capacidad:3, propio:false },
-  { nombre:"Claude Haiku",         modalidad:"API",           entrada:0.80, salida:4.00,  infra:0,   capacidad:3, propio:false },
-  { nombre:"GPT-4o mini",          modalidad:"API",           entrada:0.15, salida:0.60,  infra:0,   capacidad:2, propio:false },
-  { nombre:"Mistral Small",        modalidad:"Autoalojado",   entrada:0.10, salida:0.10,  infra:350, capacidad:2, propio:true  }
+  // Modelos de TEXTO
+  { tipo:"texto", nombre:"Claude Sonnet", modalidad:"API", base_costo:0, entrada:3.00, salida:15.00, infra:0, capacidad:5, propio:false },
+  { tipo:"texto", nombre:"GPT-4o", modalidad:"API", base_costo:0, entrada:2.50, salida:10.00, infra:0, capacidad:5, propio:false },
+  { tipo:"texto", nombre:"Llama 3.3 70B", modalidad:"Autoalojado", base_costo:0, entrada:0.20, salida:0.20, infra:850, capacidad:4, propio:true },
+  { tipo:"texto", nombre:"Gemini 2.5 Flash", modalidad:"API", base_costo:0, entrada:0.30, salida:2.50, infra:0, capacidad:3, propio:false },
+  { tipo:"texto", nombre:"Mistral Small", modalidad:"Autoalojado", base_costo:0, entrada:0.10, salida:0.10, infra:350, capacidad:2, propio:true },
+  
+  // Modelos de VISIÓN INDUSTRIAL Y ANALÍTICA
+  { tipo:"vision", nombre:"Roboflow Core API", modalidad:"API Cloud", costo_unidad: 0.015, infra:79, capacidad:3, propio:false },
+  { tipo:"vision", nombre:"YOLO v11 / v26", modalidad:"Edge Computing", costo_unidad: 0, infra:200, capacidad:5, propio:true },
+  { tipo:"vision", nombre:"YOLO v8 Nano", modalidad:"Edge Computing", costo_unidad: 0, infra:80, capacidad:2, propio:true },
+
+  // Modelos de DISEÑO GRÁFICO (Imágenes y Video)
+  { tipo:"diseno", nombre:"FLUX Pro (BFL)", modalidad:"API Generativa", costo_unidad: 0.04, infra:0, capacidad:5, propio:false },
+  { tipo:"diseno", nombre:"DALL-E 3 (OpenAI)", modalidad:"API Generativa", costo_unidad: 0.04, infra:0, capacidad:4, propio:false },
+  { tipo:"diseno", nombre:"Runway Gen-3 (Video)", modalidad:"API Generativa", costo_unidad: 0.40, infra:0, capacidad:5, propio:false }, /* Precio estimado por segundo de video generado */
+  { tipo:"diseno", nombre:"Stable Diffusion XL", modalidad:"Autoalojado", costo_unidad: 0, infra:600, capacidad:4, propio:true }, /* Infraestructura GPU en la nube/local */
+
+  // Modelos de AUDIO
+  { tipo:"audio", nombre:"Whisper API (OpenAI)", modalidad:"API", costo_unidad: 0.006, infra:0, capacidad:4, propio:false },
+  { tipo:"audio", nombre:"GPT-4o Mini Transcribe", modalidad:"API", costo_unidad: 0.003, infra:0, capacidad:2, propio:false },
+  { tipo:"audio", nombre:"Whisper Local", modalidad:"Autoalojado", costo_unidad: 0, infra:400, capacidad:4, propio:true }
 ];
 
 const $ = id => document.getElementById(id);
-const campos = ["consultas","entrada","salida"];
-const fmt = n => "US$ " + n.toLocaleString("es-AR", {minimumFractionDigits:0, maximumFractionDigits:0});
+const fmt = n => "US$ " + n.toLocaleString("es-AR", {minimumFractionDigits:0, maximumFractionDigits:2});
 
-function validar(){
-  let ok = true;
-  campos.forEach(c => {
-    const v = parseFloat($(c).value);
-    const malo = !isFinite(v) || v <= 0;
-    $("err-"+c).classList.toggle("visible", malo);
-    if (malo) ok = false;
-  });
-  return ok;
+function actualizarInterfaz() {
+  const tipo = $("tipo").value;
+  $("campos-texto").style.display = tipo === "texto" ? "block" : "none";
+  
+  if(tipo === "texto") $("label-consultas").textContent = "Consultas por mes";
+  if(tipo === "vision") $("label-consultas").textContent = "Imágenes/Frames analizados por mes";
+  if(tipo === "diseno") $("label-consultas").textContent = "Imágenes o segundos de video generados por mes";
+  if(tipo === "audio") $("label-consultas").textContent = "Minutos de audio por mes";
+  
+  calcular();
 }
 
 function calcular(){
-  if (!validar()) return;
-
-  const consultas = parseFloat($("consultas").value);
-  const tokIn = parseFloat($("entrada").value);
-  const tokOut = parseFloat($("salida").value);
+  const tipoActual = $("tipo").value;
+  const consultas = parseFloat($("consultas").value) || 0;
+  const tokIn = parseFloat($("entrada").value) || 0;
+  const tokOut = parseFloat($("salida").value) || 0;
   const minCap = parseInt($("criticidad").value, 10);
   const soloPropio = $("privado").checked;
 
-  const evaluados = MODELOS.map(m => {
-    const costo = consultas * (tokIn/1e6*m.entrada + tokOut/1e6*m.salida) + m.infra;
+  if (consultas <= 0) return;
+
+  const modelosFiltrados = MODELOS.filter(m => m.tipo === tipoActual);
+
+  const evaluados = modelosFiltrados.map(m => {
+    let costo = 0;
+    if (m.tipo === "texto") {
+      costo = consultas * (tokIn/1e6*m.entrada + tokOut/1e6*m.salida) + m.infra;
+    } else {
+      costo = (consultas * m.costo_unidad) + m.infra;
+    }
+    
     let motivo = null;
     if (m.capacidad < minCap) motivo = "capacidad insuficiente";
-    else if (soloPropio && !m.propio) motivo = "no autoalojable";
+    else if (soloPropio && !m.propio) motivo = "no autoalojable / edge";
     return {...m, costo, motivo};
   });
 
@@ -448,7 +485,7 @@ function calcular(){
   if (!elegido){
     $("v-nombre").textContent = "Ningún modelo cumple";
     $("v-costo").textContent = "—";
-    $("v-razon").textContent = "Con esta combinación de criticidad y restricción de datos no queda ninguna opción viable del listado. Es exactamente el escenario donde conviene revisar si el requisito es tan estricto como parece, o si el caso de uso se puede dividir en partes.";
+    $("v-razon").textContent = "Con esta combinación de criticidad y restricción de datos no queda ninguna opción viable en este dominio.";
     return;
   }
 
@@ -456,15 +493,19 @@ function calcular(){
   const ahorro = masCaro.costo - elegido.costo;
   $("v-nombre").textContent = elegido.nombre;
   $("v-costo").textContent = fmt(elegido.costo) + " por mes · " + elegido.modalidad;
-  $("v-razon").textContent = "Es la opción más barata que supera el umbral de capacidad para esta tarea"
-    + (soloPropio ? " y se ejecuta en tu propia infraestructura" : "")
-    + (ahorro > 0 ? ". Contra la alternativa más cara del listado, la diferencia es de " + fmt(ahorro) + " por mes." : ".");
+  $("v-razon").textContent = "Es la opción más barata que supera el umbral de capacidad requerido"
+    + (soloPropio ? " y cumple con tus políticas de datos" : "")
+    + (ahorro > 0 ? ". Contra la alternativa más cara, te ahorrás " + fmt(ahorro) + " por mes." : ".");
 }
 
-campos.forEach(c => $(c).addEventListener("input", calcular));
+$("tipo").addEventListener("change", actualizarInterfaz);
+$("consultas").addEventListener("input", calcular);
+$("entrada").addEventListener("input", calcular);
+$("salida").addEventListener("input", calcular);
 $("criticidad").addEventListener("change", calcular);
 $("privado").addEventListener("change", calcular);
-calcular();
+
+actualizarInterfaz();
 </script>
 </body>
 </html>
